@@ -1,5 +1,7 @@
 from flask import Flask
-from sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from os import path
+
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -13,7 +15,24 @@ def create_app():
     from .view import views
     from .auth import auth
 
-    app.register_blueprint(views , url_prefix = '/')
-    app.register_blueprint(auth , url_prefix = '/')
+    app.register_blueprint(views, url_prefix = '/')
+    app.register_blueprint(auth, url_prefix = '/')
+
+    #after making the blueprints and frames it's time to import the models
+    # in order to check if we have those input datas in our database already or not and what should we do with this new input data
+    from .models import User, Note
+
+    if not path.exists('website/' + DB_NAME):
+        with app.app_context():
+            db.create_all()
+            print('Created Database!')
+
+    # create_database(app)
 
     return app
+
+# def create_database(app):
+#     if not path.exists('website/' + DB_NAME):
+#         db.create_all()
+#         print('Created Database!')
+
